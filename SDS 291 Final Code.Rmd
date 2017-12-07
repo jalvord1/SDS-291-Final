@@ -13,8 +13,9 @@ library(readr)
 library(mosaic)
 library(tidyverse)
 library(stringr)
+library(data.table)
 
-MentalHealth <- read_csv("~/Documents/survey.csv")
+MentalHealth <- read_csv("survey.csv")
 glimpse(MentalHealth)
 ```
 
