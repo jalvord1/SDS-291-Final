@@ -1,0 +1,73 @@
+---
+title: "SDS 291 Final"
+author: "Julianna Alvord"
+date: "12/7/2017"
+output: pdf_document
+---
+
+#This is going to be the working code for our document
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readr)
+library(mosaic)
+library(tidyverse)
+library(stringr)
+
+MentalHealth <- read_csv("~/Documents/survey.csv")
+glimpse(MentalHealth)
+```
+
+##Data Cleaning
+# Modifying Age
+limit age between 5-117
+if outside of range, set as NaN (not a number)
+
+```{r}
+MentalHealth$Age[MentalHealth$Age < 5 | MentalHealth$Age > 117] <- NaN
+```
+
+#State for country outside of the United States
+```{r}
+#if the country is not the US, set state as Outside
+MentalHealth$state[MentalHealth$Country != "United States"] <- "Outside US"
+```
+
+#Setting United States Regions and Divisions 
+```{r}
+#if the state is set as "Outside US", set region as "Outside US"
+#if state doesnt match any of the valid states and is not "Outside US", Set as "Invalid State"
+Northeast <- c("CT", "ME", "MA", "NH", "RI", "VT", "NJ", "NY", "PA")
+NewEngland <- c("CT", "ME", "MA", "NH", "RI", "VT")
+MidAtlantic <- c("NJ", "NY", "PA")
+Midwest <- c("IL", "IN", "MI", "OH", "WI", "IA", "KS", "MN", "MO", "NE", "ND", "SD")
+EastNorthCentral <- c("IL", "IN", "MI", "OH", "WI")
+WestNorthCentral <- c("IA", "KS", "MN", "MO", "NE", "ND", "SD")
+South <- c("DE", "FL", "GA", "MD", "NC", "SC", "VA", "DC", "WV", "AL", "KY", "MS", "TN", "AR", "LA", "OK", "TX")
+SouthAtlantic <- c("DE", "FL", "GA", "MD", "NC", "SC", "VA", "DC", "WV")
+EastSouthCentral <- c("AL", "KY", "MS", "TN")
+WestSouthCentral <- c("AR", "LA", "OK", "TX")
+West <- c("AZ", "CO", "ID", "MT", "NV", "NM", "UT", "WY", "AK", "CA", "HI", "OR", "WA")
+Mountain <- c("AZ", "CO", "ID", "MT", "NV", "NM", "UT", "WY")
+Pacific <- c("AK", "CA", "HI", "OR", "WA")
+MentalHealth <- MentalHealth %>% mutate(Region = ifelse(state %in% Northeast, "Northeast", ifelse(state %in% Midwest, "Midwest", ifelse(state %in% South, "South", ifelse(state %in% West, "West", ifelse(state == "Outside US", "Outside US", "Invalid State"))))))
+
+# Set the Region
+MentalHealth <- MentalHealth %>% mutate(Division = ifelse(state %in% NewEngland, "New England", ifelse(state %in% MidAtlantic, "Mid Atlantic", ifelse(state %in% EastNorthCentral, "East North Central", ifelse(state %in% WestNorthCentral, "West North Central", ifelse(state %in% SouthAtlantic, "South Atlantic", ifelse(state %in% EastSouthCentral, "East South Central", ifelse(state %in% WestSouthCentral, "West South Central", ifelse(state %in% Mountain, "Mountain", ifelse(state %in% Pacific, "Pacific", ifelse(state == "Outside US", "Outside US", "Invalid State")))))))))))
+```
+
+#Gender
+```{r}
+MentalHealth$Gender <- str_to_upper(MentalHealth$Gender)
+
+MentalHealth$Gender <- str_trim(MentalHealth$Gender)
+
+MentalHealth <- MentalHealth %>%
+  mutate(Gender_Grouped = 
+           ifelse(Gender %in% c("CIS FEMALE", "FEMAIL", "FEMALE", "FEMALE (TRANS)", "TRANS WOMAN", "WOMAN", "CIS-FEMALE/FEMME", "F", "FEMAKE", "FEMALE (CIS)", "TRANS-FEMALE"), "Female",
+            ifelse(Gender %in% c("CIS MAN", "M", "MAILE", "MAL", "MALE (CIS)", "MALE-ISH", "MAN", "CIS MALE", "GUY (-ISH) ^_^", "MAIL", "MAKE", "MALE", "MALE LEANING ANDROGYNOUS", "MALR", "MSLE", "OSTENSIBLY MALE, UNSURE WHAT THAT REALLY MEANS", "SOMETHING KINDA MALE?"), "Male", 
+              ifelse(is.na(Gender), "NA",
+                ifelse(Gender %in% c("GENDERQUEER", "NON-BINARY", "QUEER/SHE/THEY", "ANDROGYNE", "FLUID", "QUEER"),"Gender Non-Conforming", "Other")))))
+
+tally(MentalHealth$Gender_Grouped)
+```
