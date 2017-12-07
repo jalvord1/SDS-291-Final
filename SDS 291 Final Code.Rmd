@@ -71,3 +71,21 @@ MentalHealth <- MentalHealth %>%
 
 tally(MentalHealth$Gender_Grouped)
 ```
+
+
+#Treatment to binary 0 or 1
+Currently, treatment is coded as 'Yes' or 'No'. We want Yes = 1 and No = 0, so we can use it in glm function.
+```{r}
+MentalHealth2 <- MentalHealth %>% mutate(treatmentBinary = ifelse(treatment=="Yes", 1, 0))
+```
+
+
+# Log Model
+```{r}
+#response: treatment, has the respondent sought treatment for a mental illness?
+#explanatory: age, location, gender, tech company
+
+lmodel <- glm(treatmentBinary~Age+Country+Region+Gender_Grouped+tech_company+leave,data = MentalHealth2, family = binomial(link = "logit"))
+summary(lmodel)
+```
+
