@@ -1,6 +1,6 @@
 ---
 title: "SDS 291 Final"
-author: "Julianna Alvord"
+author: "Julianna Alvord, Emily Halstead, Sabrina Sayasith"
 date: "12/7/2017"
 output: pdf_document
 ---
