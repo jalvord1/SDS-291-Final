@@ -89,8 +89,6 @@ MentalHealth <- MentalHealth %>% mutate(treatmentBinary = ifelse(treatment=="Yes
 
 #Starting Results
 ```{r}
-tally(MentalHealth$tech_company)
-
 logm1 <- glm(treatment ~ Male + Age + Division + leave + tech_company, data=MentalHealth, family=binomial)
 summary(logm1)
 ```
