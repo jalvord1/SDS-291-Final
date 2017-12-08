@@ -93,3 +93,15 @@ logm1 <- glm(treatment ~ Male + Age + Division + leave + tech_company, data=Ment
 summary(logm1)
 ```
 
+
+# Exploratory Data Analysis
+### Presence of Treatment and Age
+```{r}
+library(ggplot2)
+```
+
+```{r}
+treatmentAgeBox <- ggplot(data = MentalHealth, aes(x= treatment, y = Age, fill = Gender_Grouped)) + geom_boxplot()
+treatmentAgeBox
+```
+
