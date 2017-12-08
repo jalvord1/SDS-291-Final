@@ -81,6 +81,12 @@ MentalHealth <- MentalHealth %>%
   filter(Male %in% c("Not_Male", "Male"))
 ```
 
+#Treatment to binary 0 or 1
+Currently, treatment is coded as 'Yes' or 'No'. We want Yes = 1 and No = 0, so we can use it in glm function.
+```{r}
+MentalHealth2 <- MentalHealth %>% mutate(treatmentBinary = ifelse(treatment=="Yes", 1, 0))
+```
+
 #Starting Results
 ```{r}
 tally(MentalHealth$tech_company)
