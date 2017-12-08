@@ -95,13 +95,21 @@ summary(logm1)
 
 
 # Exploratory Data Analysis
-### Presence of Treatment and Age
+### Treatment, Age, and Gender Identity
 ```{r}
 library(ggplot2)
 ```
 
 ```{r}
-treatmentAgeBox <- ggplot(data = MentalHealth, aes(x= treatment, y = Age, fill = Gender_Grouped)) + geom_boxplot()
+treatmentAgeGenderBox <- ggplot(data = MentalHealth, aes(x= treatment, y = Age, fill = Gender_Grouped)) + geom_boxplot()
+treatmentAgeGenderBox
+```
+
+# 
+
+```{r}
+treatmentAgeBox <- ggplot(data = MentalHealth, aes(x= treatment, y = Age)) + geom_boxplot()
 treatmentAgeBox
 ```
 
+There doesn't seem to be much difference in the ages of those who get treatment and those who don't.
