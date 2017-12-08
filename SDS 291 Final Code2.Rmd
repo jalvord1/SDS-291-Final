@@ -84,7 +84,7 @@ MentalHealth <- MentalHealth %>%
 #Treatment to binary 0 or 1
 Currently, treatment is coded as 'Yes' or 'No'. We want Yes = 1 and No = 0, so we can use it in glm function.
 ```{r}
-MentalHealth2 <- MentalHealth %>% mutate(treatmentBinary = ifelse(treatment=="Yes", 1, 0))
+MentalHealth <- MentalHealth %>% mutate(treatmentBinary = ifelse(treatment=="Yes", 1, 0))
 ```
 
 #Starting Results
@@ -94,3 +94,11 @@ tally(MentalHealth$tech_company)
 logm1 <- glm(treatment ~ Male + Age + Division + leave + tech_company, data=MentalHealth, family=binomial)
 summary(logm1)
 ```
+
+
+# Stepwise Log Regression
+```{r}
+#full model with all possible variables
+fullModel <- glm(treatmentBinary~,data = MentalHealth2, family = binomial)
+```
+
