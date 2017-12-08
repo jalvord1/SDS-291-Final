@@ -95,10 +95,3 @@ logm1 <- glm(treatment ~ Male + Age + Division + leave + tech_company, data=Ment
 summary(logm1)
 ```
 
-
-# Stepwise Log Regression
-```{r}
-#full model with all possible variables
-fullModel <- glm(treatmentBinary~,data = MentalHealth2, family = binomial)
-```
-
