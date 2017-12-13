@@ -89,7 +89,7 @@ MentalHealth <- MentalHealth %>% mutate(treatmentBinary = ifelse(treatment=="Yes
 
 #Starting Results
 ```{r}
-logm1 <- glm(treatment ~ Male + Age + Division + leave + tech_company, data=MentalHealth, family=binomial)
+logm1 <- glm(treatmentBinary ~ Male + Age + Division + leave + tech_company, data=MentalHealth, family=binomial)
 summary(logm1)
 ```
 
@@ -112,4 +112,24 @@ treatmentAgeBox <- ggplot(data = MentalHealth, aes(x= treatment, y = Age)) + geo
 treatmentAgeBox
 ```
 
-There doesn't seem to be much difference in the ages of those who get treatment and those who don't.
+There doesn't seem to be a significant difference in the ages of those who get treatment and those who don't.
+
+### Is there a difference between regions? region, treatment, gender within region?
+```{r}
+divAgeBox <- ggplot(data = MentalHealth, aes(x = Region, y = Age, colour = treatment)) + geom_boxplot()
+divAgeBox
+```
+
+```{r}
+boxNo_Employees <- ggplot(data = MentalHealth, aes(x = no_employees, y = Age, fill = treatment)) + geom_boxplot()
+boxNo_Employees
+```
+
+
+```{r}
+boxLeave <- ggplot(data = MentalHealth, aes(x = leave, y = Age, fill = treatment)) + geom_boxplot()
+boxLeave
+```
+
+
+
