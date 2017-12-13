@@ -132,4 +132,45 @@ boxLeave
 ```
 
 
+## Chi-Square. Do the distributions of categorical variables differ from each other?
+
+```{r}
+library(reshape2)
+#Create contingency tables for chi square
+treatDivision <- dcast(MentalHealth, treatment~Division, fill = 0) #treatment vs Division
+treatRegion <- dcast(MentalHealth, treatment~Region, fill = 0) #treatment vs Region
+treatNo_Employees <- dcast(MentalHealth, treatment~no_employees, fill = 0) #treatment vs No_Employees
+treatLeave <- dcast(MentalHealth, treatment~leave, fill = 0) #treatment vs Leave
+```
+ 
+### Chi-Square:  treatment vs leave
+
+```{r}
+#chi square test between treatment and Leave
+#For treatment vs no treatment, is there a significant difference in the distributions of the 4 different "leave" groups (Don't Know, Somewhat difficult, Somewhat easy, Very difficult),
+#Is "leave"" related to treatment? Is the distribution of leave between treatment and no treatment what we would expect from chance?
+#H0:The variables are independent. 
+#HA: The variables are not independent. 
+chisq.test(treatLeave[c(2:5)])
+#p-value = 1.941e-06, smaller than our .05 confidence level
+#We reject the null hypothesis that the variables are independent. There is a relationship between treatment and leave.
+
+#melt dataframe for plotting
+treatLeaveMelt <- melt(treatLeave, id.vars = 'treatment')
+#visualization of the differences
+ggplot(treatLeaveMelt, aes(treatment, value)) + geom_bar(aes(fill=variable), position = "dodge", stat="identity")
+#all in all, the distributions for yes treatment vs no treatment look pretty similar
+
+#odds the person has sought treatment for a mental illness depending on how easy it is for them to leave for a mental health condition
+Odds_DontKnowLeave <- 232/309
+Odds_SomewhatDifficultLeave <- 82/44
+Odds_SomewhatEasyLeave <- 130/135
+Odds_VeryDifficultLeave <- 65/31 
+Odds_VeryEasyLeave <- 101/103
+
+#Odds Ratio Comparisons
+OR_VDifficult_VEasy <- Odds_VeryDifficultLeave/Odds_VeryEasyLeave
+OR_VDifficult_VEasy
+#OR= 2.138294. The odds of seeking treatment were 2.138 times higher with those who said that it is very diffiicult for them to leave for a mental health condition that with those who said it would be very easy to leave
+```
 
