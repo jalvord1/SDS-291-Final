@@ -143,7 +143,7 @@ treatNo_Employees <- dcast(MentalHealth, treatment~no_employees, fill = 0) #trea
 treatLeave <- dcast(MentalHealth, treatment~leave, fill = 0) #treatment vs Leave
 ```
  
-### Chi-Square:  treatment vs leave
+### Chi-Square and Odds Ratio:  treatment vs leave
 
 ```{r}
 #chi square test between treatment and Leave
@@ -171,6 +171,76 @@ Odds_VeryEasyLeave <- 101/103
 #Odds Ratio Comparisons
 OR_VDifficult_VEasy <- Odds_VeryDifficultLeave/Odds_VeryEasyLeave
 OR_VDifficult_VEasy
-#OR= 2.138294. The odds of seeking treatment were 2.138 times higher with those who said that it is very diffiicult for them to leave for a mental health condition that with those who said it would be very easy to leave
+#OR= 2.138294. The odds of seeking treatment were 2.138 times higher with those who said that it is very diffiicult for them to leave for a mental health condition than with those who said it would be very easy to leave
+OR_VEasy_SomeEasy <- Odds_VeryEasyLeave/Odds_SomewhatEasyLeave
+OR_VEasy_SomeEasy
+#odds are pretty similar between Very easy and Somewhat easy groups
+#OR = 1.018, The odds of seeking treatment were 1.02 times higher with those who said it would very easy for them leave than with those who said it would be somewhat easy
+OR_SomeDifficult_SomeEasy <- Odds_SomewhatDifficultLeave/Odds_SomewhatEasyLeave
+OR_SomeDifficult_SomeEasy
+#OR = 1.93, The odds of seeking treatment were 1.93 times higher with those who said it would be somewhat difficult for them to leave than with those who said it would be somewhat easy
+```
+
+### Chi-Square and Odds Ratio: treatment vs No_Employees
+
+```{r}
+#chi square test between treatment and no_employees
+#For treatment vs no treatment, is there a significant difference in the distributions of the 6 different no_employee groups (1-5, 6-25, 26-100, 100-500, 500-1000, more than 1000)
+#Is no_employees related to treatment? Is the distribution of no-employees between treatment and no treatment what we would expect from chance?
+#H0:The variables are independent. 
+#HA: The variables are not independent. 
+chisq.test(treatNo_Employees[c(2:7)])
+#p-value = .0165, Greater than the .05 confidence level
+#We cannot reject the null hypothesis that the variables are independent
+```
+
+### Chi-Square and Odds Ratio: treatment vs. Region
+```{r}
+#chi square test between treatment and Region
+#For treatment vs no treatment, is there a significant difference in the distributions of the 6 different region groups (Midwest, Northeast, OutsideUS, South, West, NA)
+#Is no_employees related to treatment? Is the distribution of no-employees between treatment and no treatment what we would expect from chance?
+#H0:The variables are independent. 
+#HA: The variables are not independent. 
+chisq.test(treatRegion[c(2:7)])
+#p-value = .0165, Greater than the .05 confidence level
+#We cannot reject the null hypothesis that the variables are independent
+```
+
+### Step-wise
+```{r}
+#fullMSE <- (summary(logm1)$sigma)^2
+#step(null_mod, scope = list(upper = logm1),
+#scale = fullMSE, direction = "both")
+#where logm1 is the full model and null_mod was treatmentBinary~1
+
+#remove NA values from data set
+#comments variable has a lot of NA values, it's probably OK to remove as the answers are so variable/they are opinions. we are not doing nlp.
+MentalHealth_NoNAs <- MentalHealth[c(-27)]
+MentalHealth_NoNAs <- MentalHealth_NoNAs[complete.cases(MentalHealth_NoNAs), ] #left with 960 observations
+#null model
+model.null <- glm(treatmentBinary~1, data = MentalHealth_NoNAs, family = binomial(link="logit"))
+#full model
+model.full = glm(treatmentBinary~Age + Gender_Grouped + Division + Region + obs_consequence + mental_vs_physical + phys_health_interview + mental_health_interview + supervisor + coworkers + phys_health_consequence + mental_health_consequence + leave + anonymity + seek_help + wellness_program + care_options + benefits + tech_company + remote_work + no_employees + work_interfere + family_history + self_employed + state , data = MentalHealth_NoNAs, family = binomial(link="logit"), control = list(maxit = 50)) # surprised this works with non numeric variables
+#was getting: glm.fit: algorithm did not convergeglm.fit: fitted probabilities numerically 0 or 1 occurred
+#removed country and it doesn't give error now....
+step(model.null,
+     scope = list(upper=model.full),
+             direction="both",
+             test="Chisq",
+             data=MentalHealth_NoNAs)
+```
+
+### Classification Tree
+
+```{r}
+library(rpart)
+library(rpart.plot)
+#source: https://www.statmethods.net/advstats/cart.html
+decisionTree <- rpart(treatmentBinary~Age + Gender_Grouped + Division + Region + obs_consequence + mental_vs_physical + phys_health_interview + mental_health_interview + supervisor + coworkers + phys_health_consequence + mental_health_consequence + leave + anonymity + seek_help + wellness_program + care_options + benefits + tech_company + remote_work + no_employees + work_interfere + family_history + self_employed + state + Country , data = MentalHealth_NoNAs, method = "class", control=rpart.control(minsplit=20, cp=0.001))
+#may be overfitted
+decisionTree <- prune(decisionTree, cp = .01)
+plotTree <- rpart.plot(decisionTree)
+#work_interfere seems to be the most important in predicting that someone won't get treatment. if someone says that work never inteferes, most likely to not get treatment
+
 ```
 
